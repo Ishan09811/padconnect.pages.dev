@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PadConnect</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: radial-gradient(circle at top, #0b1220, #05080f);
+    color: #e0e6f0;
+    text-align: center;
+}
+
+.container {
+    padding: 60px 20px;
+}
+
+.logo {
+    width: 120px;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 20px rgba(120, 160, 255, 0.3));
+}
+
+h1 {
+    font-size: 42px;
+    margin: 10px 0;
+}
+
+.tagline {
+    color: #9aa4b2;
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.button {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #5f8cff, #7aa2ff);
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.button:hover {
+    box-shadow: 0 0 20px rgba(100, 150, 255, 0.5);
+}
+
+.section {
+    margin-top: 80px;
+}
+
+.card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 16px;
+    padding: 20px;
+    margin: 10px;
+    display: inline-block;
+    width: 250px;
+}
+
+#releaseNotes {
+    white-space: pre-wrap;     
+    word-wrap: break-word;    
+    overflow-wrap: break-word;
+    text-align: left;
+    max-width: 600px;
+    margin: 20px auto;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+    <img src="icon.png" class="logo">
+    <h1>PadConnect</h1>
+    <p class="tagline">Use your Android phone as a gamepad for PC</p>
+
+    <a id="downloadBtn" class="button">Download</a>
+</div>
+
+<h2 id="version">Latest Version: ...</h2>
+
+<div id="releaseNotes" class="card">
+    Loading release notes...
+</div>
+
+<div class="section">
+    <h2>Features</h2>
+
+    <div class="card">Wireless connection</div>
+    <div class="card">Low latency input</div>
+    <div class="card">Works with games/emulators</div>
+</div>
+
+<div class="section">
+    <h2>About</h2>
+    <p>PadConnect lets you use your Android device as a controller when you don’t have one.</p>
+</div>
+
+</body>
+</html>
+
+<script>
+async function setupReleaseInfo() {
+    const btn = document.getElementById("downloadBtn");
+    const versionEl = document.getElementById("version");
+    const notesEl = document.getElementById("releaseNotes");
+
+    btn.innerText = "Loading...";
+
+    try {
+        const res = await fetch(
+            "https://api.github.com/repos/Ishan09811/PadConnect/releases/latest"
+        );
+
+        const data = await res.json();
+        versionEl.innerText = "Latest Version: " + data.tag_name;
+        notesEl.innerText = data.body || "No release notes provided.";
+        const asset = data.assets.find(a => a.name.endsWith(".apk")) || data.assets[0];
+
+        if (asset) {
+            btn.innerText = "Download " + data.tag_name;
+
+            btn.onclick = () => {
+                window.location.href = asset.browser_download_url;
+            };
+        } else {
+            btn.innerText = "No Download Available";
+        }
+
+    } catch (err) {
+        console.error(err);
+        btn.innerText = "Failed to load";
+        notesEl.innerText = "Could not fetch release info.";
+    }
+}
+
+setupReleaseInfo();
+</script>
